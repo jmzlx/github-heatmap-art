@@ -1,7 +1,7 @@
 ---
 name: painting-github-heatmaps
 description: Paints pixel art on GitHub contribution graphs using backdated commits to a private repo. Use when asked to create, modify, or design GitHub heatmap art, contribution graph designs, or profile customization. Handles the 52x7 grid model, intensity levels, design composition, and the git plumbing for rendering.
-compatibility: Requires git and a GitHub account with a personal access token (repo scope).
+compatibility: Requires git and gh CLI (or GITHUB_TOKEN env var).
 ---
 
 # Painting GitHub Heatmaps
@@ -21,7 +21,7 @@ GitHub's contribution graph is a 52×7 grid (weeks × days). Each cell shows com
 
 1. **Compose** — build a 7×52 grid in code (Python, JS, whatever)
 2. **Preview** — print it as ASCII art. Verify it looks right.
-3. **Render** — `bash {baseDir}/scripts/paint.sh <year> <grid.json>` (low freedom — run exactly this)
+3. **Render** — `bash ./scripts/paint.sh <year> <grid.json>` (run from this skill's directory)
 
 ## Composing Grids
 
@@ -69,7 +69,7 @@ If you can't tell what the design is from the preview, it won't work on GitHub e
 **Low freedom — run exactly this, do not improvise git commands:**
 
 ```bash
-bash {baseDir}/scripts/paint.sh <year> <path-to-grid.json>
+bash ./scripts/paint.sh <year> <path-to-grid.json>
 ```
 
 The script auto-detects credentials from git config and `gh` CLI. Override with env vars if needed:
@@ -83,14 +83,14 @@ The script handles: repo creation, backdated commits, batched pushing (500/batch
 ## Clearing a Year
 
 ```bash
-bash {baseDir}/scripts/paint.sh <year> --clear
+bash ./scripts/paint.sh <year> --clear
 ```
 
 This removes all heatmap commits for the given year while preserving other years.
 
 ## Design Rules
 
-Read [design-guide.md]({baseDir}/references/design-guide.md) before designing. The critical rules:
+Read [design-guide.md](./references/design-guide.md) before designing. The critical rules:
 
 1. **Binary contrast wins** — design with level 0 (gray) and level 4 (dark green). Levels 1–3 look nearly identical on GitHub.
 2. **Recognizability is #1** — if it needs a caption, redesign it.

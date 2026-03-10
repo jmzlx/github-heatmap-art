@@ -66,16 +66,19 @@ If you can't tell what the design is from the preview, it won't work on GitHub e
 
 ## Rendering
 
-**Low freedom — run exactly this, do not improvise git commands:**
+**Low freedom — run exactly this, do not improvise git commands.**
+
+First, resolve this skill's directory (the folder containing this SKILL.md):
 
 ```bash
-bash ./scripts/paint.sh <year> <path-to-grid.json>
+SKILL_DIR="<absolute path to this skill's directory>"
+bash "$SKILL_DIR/scripts/paint.sh" <year> <path-to-grid.json>
 ```
 
 The script auto-detects credentials from git config and `gh` CLI. Override with env vars if needed:
 - `GITHUB_TOKEN` — falls back to `gh auth token`
 - `GIT_AUTHOR_NAME` — falls back to `git config user.name`
-- `GIT_AUTHOR_EMAIL` — falls back to `git config user.email` (noreply format recommended: `<id>+<user>@users.noreply.github.com`)
+- `GIT_AUTHOR_EMAIL` — falls back to `git config user.email`. **Important:** if GitHub's email privacy is enabled, you must use the full noreply format: `<id>+<user>@users.noreply.github.com` (find your ID at Settings → Emails). The short form `<user>@users.noreply.github.com` will be rejected.
 - `HEATMAP_REPO` — private repo name (default: `heatmap-art`)
 
 The script validates the grid (must be exactly 7 rows × 52 cols, values 0–4) and rejects bad input before any git operations.
@@ -91,7 +94,7 @@ Each year is independent. Run `paint.sh` once per year — they don't interfere.
 ## Clearing a Year
 
 ```bash
-bash ./scripts/paint.sh <year> --clear
+bash "$SKILL_DIR/scripts/paint.sh" <year> --clear
 ```
 
 This removes all heatmap commits for the given year while preserving other years.

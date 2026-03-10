@@ -33,6 +33,38 @@ GIT_AUTHOR_EMAIL="${GIT_AUTHOR_EMAIL:-$(git config user.email 2>/dev/null || tru
 : "${GIT_AUTHOR_NAME:?No author name found. Set GIT_AUTHOR_NAME or run 'git config --global user.name \"Your Name\"'.}"
 : "${GIT_AUTHOR_EMAIL:?No author email found. Set GIT_AUTHOR_EMAIL or run 'git config --global user.email \"you@example.com\"'.}"
 
+# Validate grid early (before any network calls or repo creation)
+if [ "$GRID_ARG" != "--clear" ]; then
+  if [ ! -f "$GRID_ARG" ]; then
+    echo "Error: grid file not found: $GRID_ARG" >&2
+    exit 1
+  fi
+  python3 -c "
+import json, sys
+grid = json.load(open('${GRID_ARG}'))
+errors = []
+if not isinstance(grid, list):
+    errors.append('Grid must be a JSON array of arrays')
+elif len(grid) != 7:
+    errors.append(f'Grid must have exactly 7 rows, got {len(grid)}')
+else:
+    for r, row in enumerate(grid):
+        if not isinstance(row, list):
+            errors.append(f'Row {r} is not an array')
+            continue
+        if len(row) != 52:
+            errors.append(f'Row {r} must have 52 columns, got {len(row)}')
+        for c, v in enumerate(row):
+            if not isinstance(v, int) or v < 0 or v > 4:
+                errors.append(f'Invalid intensity {v} at row {r}, col {c} (must be 0-4)')
+if errors:
+    print('Grid validation failed:', file=sys.stderr)
+    for e in errors:
+        print(f'  - {e}', file=sys.stderr)
+    sys.exit(1)
+" || exit 1
+fi
+
 # Resolve GitHub username
 USERNAME=$(curl -sf -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github+json" \
@@ -130,36 +162,6 @@ fi
 
 # --- PAINT MODE ---
 GRID_FILE="$GRID_ARG"
-if [ ! -f "$GRID_FILE" ]; then
-  echo "Error: grid file not found: $GRID_FILE" >&2
-  exit 1
-fi
-
-# Validate grid dimensions and values
-python3 -c "
-import json, sys
-grid = json.load(open('${GRID_FILE}'))
-errors = []
-if not isinstance(grid, list):
-    errors.append('Grid must be a JSON array of arrays')
-elif len(grid) != 7:
-    errors.append(f'Grid must have exactly 7 rows, got {len(grid)}')
-else:
-    for r, row in enumerate(grid):
-        if not isinstance(row, list):
-            errors.append(f'Row {r} is not an array')
-            continue
-        if len(row) != 52:
-            errors.append(f'Row {r} must have 52 columns, got {len(row)}')
-        for c, v in enumerate(row):
-            if not isinstance(v, int) or v < 0 or v > 4:
-                errors.append(f'Invalid intensity {v} at row {r}, col {c} (must be 0-4)')
-if errors:
-    print('Grid validation failed:', file=sys.stderr)
-    for e in errors:
-        print(f'  - {e}', file=sys.stderr)
-    sys.exit(1)
-" || exit 1
 
 # Calculate the Sunday on or before Jan 1
 JAN1_DOW=$(python3 -c "import datetime; print(datetime.date(${YEAR},1,1).weekday())")

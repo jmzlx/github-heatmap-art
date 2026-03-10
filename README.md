@@ -20,12 +20,14 @@ cp -r painting-github-heatmaps .agents/skills/
 git clone https://github.com/jmzlx/github-heatmap-art .agents/skills/painting-github-heatmaps
 ```
 
-Set your environment:
+The script auto-detects your git config and `gh` CLI credentials. If you have `git` configured and `gh auth login` done, **zero setup needed**.
+
+Optional overrides:
 ```bash
-export GITHUB_TOKEN="ghp_..."                                    # repo scope
-export GIT_AUTHOR_NAME="Your Name"
-export GIT_AUTHOR_EMAIL="12345+you@users.noreply.github.com"    # Settings → Emails
-export HEATMAP_REPO="heatmap-art"                                # will be created as private
+export GITHUB_TOKEN="ghp_..."                                    # if no gh CLI
+export GIT_AUTHOR_NAME="Your Name"                               # if no git config
+export GIT_AUTHOR_EMAIL="12345+you@users.noreply.github.com"    # noreply recommended
+export HEATMAP_REPO="heatmap-art"                                # default works
 ```
 
 Then ask your agent:

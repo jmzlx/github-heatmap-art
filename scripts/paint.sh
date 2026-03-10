@@ -24,9 +24,14 @@ GRID_ARG="${2:?Usage: paint.sh <year> <grid.json|--clear>}"
 REPO="${HEATMAP_REPO:-heatmap-art}"
 BATCH_SIZE=500
 
-: "${GITHUB_TOKEN:?GITHUB_TOKEN is required}"
-: "${GIT_AUTHOR_NAME:?GIT_AUTHOR_NAME is required}"
-: "${GIT_AUTHOR_EMAIL:?GIT_AUTHOR_EMAIL is required}"
+# Resolve credentials with sensible fallbacks
+GITHUB_TOKEN="${GITHUB_TOKEN:-$(gh auth token 2>/dev/null || true)}"
+GIT_AUTHOR_NAME="${GIT_AUTHOR_NAME:-$(git config user.name 2>/dev/null || true)}"
+GIT_AUTHOR_EMAIL="${GIT_AUTHOR_EMAIL:-$(git config user.email 2>/dev/null || true)}"
+
+: "${GITHUB_TOKEN:?No GitHub token found. Set GITHUB_TOKEN or install gh CLI and run 'gh auth login'.}"
+: "${GIT_AUTHOR_NAME:?No author name found. Set GIT_AUTHOR_NAME or run 'git config --global user.name \"Your Name\"'.}"
+: "${GIT_AUTHOR_EMAIL:?No author email found. Set GIT_AUTHOR_EMAIL or run 'git config --global user.email \"you@example.com\"'.}"
 
 # Resolve GitHub username
 USERNAME=$(curl -sf -H "Authorization: Bearer $GITHUB_TOKEN" \

@@ -72,10 +72,10 @@ If you can't tell what the design is from the preview, it won't work on GitHub e
 bash {baseDir}/scripts/paint.sh <year> <path-to-grid.json>
 ```
 
-Required environment variables:
-- `GITHUB_TOKEN` — personal access token with `repo` scope
-- `GIT_AUTHOR_NAME` — your name
-- `GIT_AUTHOR_EMAIL` — must be your GitHub noreply email: `<id>+<user>@users.noreply.github.com`
+The script auto-detects credentials from git config and `gh` CLI. Override with env vars if needed:
+- `GITHUB_TOKEN` — falls back to `gh auth token`
+- `GIT_AUTHOR_NAME` — falls back to `git config user.name`
+- `GIT_AUTHOR_EMAIL` — falls back to `git config user.email` (noreply format recommended: `<id>+<user>@users.noreply.github.com`)
 - `HEATMAP_REPO` — private repo name (default: `heatmap-art`)
 
 The script handles: repo creation, backdated commits, batched pushing (500/batch to avoid GitHub's silent drop limit), year boundary filtering, force push.

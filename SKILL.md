@@ -78,7 +78,15 @@ The script auto-detects credentials from git config and `gh` CLI. Override with 
 - `GIT_AUTHOR_EMAIL` — falls back to `git config user.email` (noreply format recommended: `<id>+<user>@users.noreply.github.com`)
 - `HEATMAP_REPO` — private repo name (default: `heatmap-art`)
 
-The script handles: repo creation, backdated commits, batched pushing (500/batch to avoid GitHub's silent drop limit), year boundary filtering, force push.
+The script validates the grid (must be exactly 7 rows × 52 cols, values 0–4) and rejects bad input before any git operations.
+
+It handles: repo creation, backdated commits, batched pushing (500/batch to avoid GitHub's silent drop limit), year boundary filtering, force push.
+
+**Commit-per-level mapping:** level 0=0, 1=2, 2=5, 3=8, 4=12 commits per cell. A full level-4 canvas ≈ 4,368 commits (~9 batch pushes).
+
+## Multiple Years
+
+Each year is independent. Run `paint.sh` once per year — they don't interfere. Re-rendering the same year **overwrites** (force-push replaces all commits for that year).
 
 ## Clearing a Year
 
@@ -96,6 +104,14 @@ Read [design-guide.md](./references/design-guide.md) before designing. The criti
 2. **Recognizability is #1** — if it needs a caption, redesign it.
 3. **2px minimum thickness** — single-pixel lines vanish on the real heatmap.
 4. **Geometric patterns and iconic shapes work.** Abstract art and gradients don't.
+
+## Tips
+
+**Centering:** A sprite of width W centers at column `(52 - W) // 2`. Height H centers at row `(7 - H) // 2`.
+
+**GitHub propagation:** The contribution graph can take a few minutes to update after push. Don't panic if it's not immediate.
+
+**Local cache:** The script caches the repo clone at `/tmp/heatmap-<user>-<repo>`. It persists across runs and is reused automatically.
 
 ## Recovery
 

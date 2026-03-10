@@ -135,6 +135,32 @@ if [ ! -f "$GRID_FILE" ]; then
   exit 1
 fi
 
+# Validate grid dimensions and values
+python3 -c "
+import json, sys
+grid = json.load(open('${GRID_FILE}'))
+errors = []
+if not isinstance(grid, list):
+    errors.append('Grid must be a JSON array of arrays')
+elif len(grid) != 7:
+    errors.append(f'Grid must have exactly 7 rows, got {len(grid)}')
+else:
+    for r, row in enumerate(grid):
+        if not isinstance(row, list):
+            errors.append(f'Row {r} is not an array')
+            continue
+        if len(row) != 52:
+            errors.append(f'Row {r} must have 52 columns, got {len(row)}')
+        for c, v in enumerate(row):
+            if not isinstance(v, int) or v < 0 or v > 4:
+                errors.append(f'Invalid intensity {v} at row {r}, col {c} (must be 0-4)')
+if errors:
+    print('Grid validation failed:', file=sys.stderr)
+    for e in errors:
+        print(f'  - {e}', file=sys.stderr)
+    sys.exit(1)
+" || exit 1
+
 # Calculate the Sunday on or before Jan 1
 JAN1_DOW=$(python3 -c "import datetime; print(datetime.date(${YEAR},1,1).weekday())")
 # Python weekday: Mon=0..Sun=6. Convert to days-to-subtract (Sun=0 offset)

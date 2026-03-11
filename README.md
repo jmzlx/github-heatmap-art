@@ -1,6 +1,6 @@
-# painting-github-heatmaps
+# GitHub Heatmap Art
 
-> An [AgentSkill](https://agentskills.io) that turns GitHub's contribution graph into a pixel art canvas.
+An [AgentSkill](https://agentskills.io) that turns GitHub's contribution graph into a pixel art canvas.
 
 Tell your AI agent to paint pixel art on your GitHub profile. It handles the design — the skill handles the git plumbing.
 
